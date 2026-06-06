@@ -19,7 +19,7 @@ function App() {
           <CdPlayer />
         </DesktopIcon>
         <DesktopIcon icon={<Inetcpl1313 variant="32x32_4"/>} name="Browser">
-          <iframe width={800} height={500} src="https://swisscows.com" />
+          <iframe width={800} height={500} src="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1" />
         </DesktopIcon>
         <DesktopIcon width={650} icon={<Computer variant="32x32_4"/>} name="About Me">
           <Resume />
