@@ -7,7 +7,7 @@ import {
   Wordpad,
   Mail
 } from "@react95/icons";
-import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import Shutdown from "./Shutdown";
 import { useWindowsStore } from "../store/windows";
