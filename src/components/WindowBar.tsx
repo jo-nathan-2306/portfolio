@@ -38,16 +38,13 @@ function WindowBar() {
             <List.Item icon={<Mail variant="32x32_4" />}>
               <List width={"200px"}>
                 <List.Item icon={<FaGithub size={16} />}>
-                  <a href="https://github.com/YOUR_GITHUB" target="_blank" style={{ textDecoration: 'none', color: '#222', fontFamily: 'W95F, MS Sans Serif, sans-serif' }}>GitHub</a>
+                  <a href="https://github.com/jo-nathan-2306" target="_blank" style={{ textDecoration: 'none', color: '#222', fontFamily: 'W95F, MS Sans Serif, sans-serif' }}>GitHub</a>
                 </List.Item>
                 <List.Item icon={<FaLinkedin size={16} />}>
-                  <a href="https://linkedin.com/in/YOUR_LINKEDIN" target="_blank" style={{ textDecoration: 'none', color: '#222', fontFamily: 'W95F, MS Sans Serif, sans-serif' }}>LinkedIn</a>
-                </List.Item>
-                <List.Item icon={<FaTwitter size={16} />}>
-                  <a href="https://twitter.com/YOUR_TWITTER" target="_blank" style={{ textDecoration: 'none', color: '#222', fontFamily: 'W95F, MS Sans Serif, sans-serif' }}>Twitter (X)</a>
+                  <a href="https://linkedin.com/in/jonathan-giboy-panicker-2a41ba2b2/" target="_blank" style={{ textDecoration: 'none', color: '#222', fontFamily: 'W95F, MS Sans Serif, sans-serif' }}>LinkedIn</a>
                 </List.Item>
                 <List.Item icon={<Mail variant="16x16_4" />}>
-                  <a href="mailto:YOUR_EMAIL@gmail.com" style={{ textDecoration: 'none', color: '#222', fontFamily: 'W95F, MS Sans Serif, sans-serif' }}>Gmail</a>
+                  <a href="mailto:jonathangiboy@gmail.com" style={{ textDecoration: 'none', color: '#222', fontFamily: 'W95F, MS Sans Serif, sans-serif' }}>Gmail</a>
                 </List.Item>
               </List>
               Contact
