@@ -5,7 +5,7 @@ import {
   Joy102,
   Inetcpl1313,
   Wordpad,
-  Mail
+  Mail,
 } from "@react95/icons";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { useEffect, useState } from "react";

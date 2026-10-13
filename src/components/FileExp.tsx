@@ -38,6 +38,20 @@ type OpenFile = {
   minimized?: boolean;
 };
 
+const REPOSITORIES = [
+  { name: "karlos_security", description: "Team repository for Tathacks 2026.", language: "Python" },
+  { name: "chip8_simulator", description: "CHIP-8 emulator and simulator.", language: "C++" },
+  { name: "navu", description: "Project repository.", language: "Python" },
+  { name: "loan-default-predictor", description: "Production-grade loan default risk prediction and automated underwriting system.", language: "Python" },
+  { name: "medemi_ai", description: "AI project repository.", language: "Python" },
+  { name: "llm", description: "Implementation of Build an LLM from Scratch by Sebastian Raschka.", language: "Python" },
+  { name: "neat_flappy_ai", description: "Self-learning Flappy Bird built with Python, Pygame, and NEAT.", language: "Python" },
+  { name: "image2ascii", description: "A web app that converts images to ASCII art.", language: "Python" },
+  { name: "wallpaper-changer", description: "Changes the desktop wallpaper periodically using random images.", language: "Python" },
+  { name: "Dank-Dave", description: "Project repository.", language: "Python" },
+  { name: "russian-roulette-bot", description: "Discord bot project.", language: "" },
+];
+
 const ROOT: FileItem[] = [
   {
     name: "Documents",
@@ -59,16 +73,15 @@ const ROOT: FileItem[] = [
         type: "folder",
         icon: <Folder variant="32x32_4" />,
         modified: "5/08/2025",
-        children: [
-          {
-            name: "Proposal.txt", type: "file", icon: <FileText variant="32x32_4" />, size: "8 KB", modified: "5/07/2025",
-            content: "Project Proposal\n================\n\nObjective: Build a cross-platform desktop app.\nTimeline: 3 months.\nBudget: $12,000.\n\nPhase 1 - Research\nPhase 2 - Development\nPhase 3 - Testing & Launch\n",
-          },
-          {
-            name: "Budget.txt", type: "file", icon: <FileText variant="32x32_4" />, size: "6 KB", modified: "5/06/2025",
-            content: "Budget Breakdown\n================\n\nDesign:      $2,000\nDevelopment: $7,000\nMarketing:   $2,000\nMisc:        $1,000\n-----------------------\nTotal:      $12,000\n",
-          },
-        ],
+        children: REPOSITORIES.map((repository) => ({
+          name: repository.name,
+          type: "file" as const,
+          icon: <FileText variant="32x32_4" />,
+          modified: "",
+          content: repository.description,
+          repo: `https://github.com/jo-nathan-2306/${repository.name}`,
+          stack: repository.language,
+        })),
       },
     ],
   },
@@ -343,7 +356,7 @@ export default function FileExp({ initialPath = "__root__" }: FileExpProps) {
       setSelectedItem(null);
       return;
     }
-    if (item.name.endsWith(".txt") && item.content !== undefined) {
+    if ((item.repo || item.name.endsWith(".txt")) && item.content !== undefined) {
       const id = `${item.name}-${Date.now()}`;
       const offset = openFiles.length * 24;
       setOpenFiles((prev) => [
@@ -362,9 +375,16 @@ export default function FileExp({ initialPath = "__root__" }: FileExpProps) {
   }
 
   const itemRow = (item: FileItem, cls: string, smallIcon: React.ReactNode) => ({
-    cls: `${cls}${selectedItem === item.name ? " selected" : ""}`,
-    onClick: (e: React.MouseEvent) => { e.stopPropagation(); setSelectedItem(item.name); },
-    onDoubleClick: () => handleItemDoubleClick(item),
+    cls: `${cls}${selectedItem === item.name ? " selected" : ""}${item.repo ? " repository-link" : ""}`,
+    onClick: (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (item.repo) {
+        window.open(item.repo, "_blank", "noopener,noreferrer");
+        return;
+      }
+      setSelectedItem(item.name);
+    },
+    onDoubleClick: () => { if (!item.repo) handleItemDoubleClick(item); },
     icon: smallIcon,
   });
 
@@ -384,6 +404,7 @@ export default function FileExp({ initialPath = "__root__" }: FileExpProps) {
         .fe-large-grid { display:flex; flex-wrap:wrap; align-content:flex-start; gap:4px; padding:4px; }
         .fe-large-item { display:flex; flex-direction:column; align-items:center; width:80px; padding:4px; cursor:default; text-align:center; }
         .fe-large-item.selected { background:#000080; color:#fff; }
+        .repository-link { cursor:pointer !important; }
         .fe-large-item span { font-size:11px; margin-top:4px; word-break:break-word; max-width:76px; line-height:1.2; }
         .fe-small-grid { display:flex; flex-wrap:wrap; align-content:flex-start; gap:2px; padding:4px; }
         .fe-small-item { display:flex; align-items:center; width:140px; padding:2px 4px; gap:4px; cursor:default; font-size:12px; }

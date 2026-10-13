@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DOOM</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #000; }
+    body { display: grid; place-items: center; }
+    canvas { display: block; width: 100vw; height: 100vh; outline: 0; image-rendering: pixelated; }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" tabindex="0" oncontextmenu="event.preventDefault()"></canvas>
+  <script>
+    const gameAssets = "/doom/";
+    const canvas = document.getElementById("canvas");
+
+    function enableMouse() {
+      if (typeof Module._toggleMouse === "function") Module._toggleMouse(1);
+    }
+
+    window.Module = {
+      canvas,
+      locateFile(path, prefix) {
+        return path.endsWith(".data") ? `${gameAssets}${path}` : `${prefix}${path}`;
+      },
+      onRuntimeInitialized() {
+        window.setTimeout(enableMouse, 1200);
+      },
+      print: (...values) => console.log(...values),
+      printErr: (...values) => console.error(...values),
+    };
+
+    canvas.addEventListener("click", () => {
+      enableMouse();
+      canvas.focus();
+      if (document.pointerLockElement !== canvas && canvas.requestPointerLock) {
+        const request = canvas.requestPointerLock();
+        if (request && typeof request.catch === "function") request.catch(() => {});
+      }
+    });
+
+  </script>
+  <script async src="/doom/index.js"></script>
+</body>
+</html>

@@ -9,12 +9,16 @@ import wallpaper from "./assets/wallpaper.jpg";
 import FileExp from "./components/FileExp";
 import { CdMusic } from "@react95/icons";
 import CdPlayer from "./components/CdPlayer";
+import Doom from "./components/Doom";
+import Portfolio from "./components/Portfolio";
+import { DoomIcon, PortfolioIcon } from "./components/AppIcons";
 
 
 function App() {
   return (
-    <div style={{ width: "100%", backgroundImage: `url(${wallpaper})`, backgroundSize: "cover", backgroundPosition: "center", minHeight: "100vh", position: "relative" }}>
-      <div className="fixed" style={{ display: "grid", gridAutoFlow: "column", gridTemplateRows: "repeat(7, max-content)", rowGap: "8px", columnGap: "12px", padding: "8px 10px" }}>
+    <div className="desktop-shell" style={{ backgroundImage: `url(${wallpaper})` }}>
+      <WindowBar />
+      <div className="desktop-icons">
         <DesktopIcon width={480} height={120} icon={<CdMusic variant="32x32_4"/>} name="CD Player">
           <CdPlayer />
         </DesktopIcon>
@@ -24,8 +28,14 @@ function App() {
         <DesktopIcon width={650} icon={<Computer variant="32x32_4"/>} name="About Me">
           <Resume />
         </DesktopIcon>
+        <DesktopIcon width={900} height={640} icon={<PortfolioIcon variant="32x32_4"/>} name="Portfolio">
+          <Portfolio />
+        </DesktopIcon>
         <DesktopIcon width={400} height={400} icon={<Joy102 variant="32x32_4"/>} name="Game">
           <Game />
+        </DesktopIcon>
+        <DesktopIcon width={960} height={600} icon={<DoomIcon variant="32x32_4"/>} name="DOOM">
+          <Doom />
         </DesktopIcon>
         <DesktopIcon width={400} icon={<Mail variant="32x32_4"/>} name="Contact">
           <Contact />
@@ -37,7 +47,6 @@ function App() {
           <FileExp initialPath="Documents/Projects" />
         </DesktopIcon>
       </div>
-      <WindowBar />
     </div>
   );
 }

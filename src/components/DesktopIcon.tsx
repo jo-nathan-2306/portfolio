@@ -79,38 +79,51 @@ interface WindowProps {
 function getRandomCenterPosition(width: number, height: number) {
   const winW = typeof window !== "undefined" ? window.innerWidth : 1024;
   const winH = typeof window !== "undefined" ? window.innerHeight : 768;
+  const safeW = Math.min(width, Math.max(0, winW - 32));
+  const safeH = Math.min(height, Math.max(0, winH - 72));
   const maxOffsetX = Math.min(150, Math.floor(winW * 0.2));
   const maxOffsetY = Math.min(120, Math.floor(winH * 0.2));
-  const x = Math.round(winW / 2 - width / 2 + (Math.random() * 2 - 1) * maxOffsetX);
-  const y = Math.round(winH / 2 - height / 2 + (Math.random() * 2 - 1) * maxOffsetY);
+  const x = Math.round(winW / 2 - safeW / 2 + (Math.random() * 2 - 1) * maxOffsetX);
+  const y = Math.round((winH - 36) / 2 - safeH / 2 + (Math.random() * 2 - 1) * maxOffsetY);
   return {
-    x: Math.max(16, Math.min(x, winW - width - 16)),
-    y: Math.max(16, Math.min(y, winH - height - 16)),
+    x: Math.max(8, Math.min(x, winW - safeW - 8)),
+    y: Math.max(8, Math.min(y, winH - safeH - 44)),
   };
 }
 
 function getCenterPosition(width: number, height: number) {
   const winW = typeof window !== "undefined" ? window.innerWidth : 1024;
   const winH = typeof window !== "undefined" ? window.innerHeight : 768;
-  const x = Math.round(winW / 2 - width / 2);
-  const y = Math.round(winH / 2 - height / 2);
+  const safeW = Math.min(width, Math.max(0, winW - 32));
+  const safeH = Math.min(height, Math.max(0, winH - 72));
+  const x = Math.round(winW / 2 - safeW / 2);
+  const y = Math.round((winH - 36) / 2 - safeH / 2);
   return { x, y };
 }
 
 const Window = ({ title, onClose, children, icon, width, height, defaultPosition }: WindowProps) => {
-  const { minimize } = useModal();
+  const { minimize, focus } = useModal();
   const calcW = width ?? 400;
   const calcH = height ?? 320;
   const resolvedPosition = defaultPosition ?? React.useMemo(() => getRandomCenterPosition(calcW, calcH), [calcW, calcH]);
   const modalProps: Record<string, any> = {
     id: title,
+    hasWindowButton: true,
+    className: `desktop-window${title === "DOOM" ? " doom-window" : ""}`,
+    dragOptions: {
+      bounds: { top: 0, right: 0, bottom: 36, left: 0 },
+      recomputeBounds: { dragStart: true, drag: true, dragEnd: true },
+    },
     icon,
     title,
     titleBarOptions: [
       <TitleBar.Minimize
         style={{ marginBlock: "auto" }}
         key="maximize"
-        onClick={() => minimize(title)}
+        onClick={() => {
+          minimize(title);
+          focus("no-id");
+        }}
       />,
       <TitleBar.Close
         style={{ marginBlock: "auto" }}
@@ -145,7 +158,15 @@ const Window = ({ title, onClose, children, icon, width, height, defaultPosition
             maxHeight: "75vh",
             overflowY: "auto",
           };
-          contentProps.className = "win95-scroll";
+          contentProps.className = "responsive-window-content win95-scroll";
+        } else if (title === "DOOM") {
+          contentProps.className = "responsive-window-content doom-window-content";
+          contentProps.style = { padding: 0, overflow: "hidden" };
+        } else if (title === "Portfolio") {
+          contentProps.className = "responsive-window-content portfolio-window-content";
+          contentProps.style = { padding: 0, overflow: "hidden" };
+        } else {
+          contentProps.className = "responsive-window-content win95-scroll";
         }
         return (
           // If no width/height passed, Modal.Content will size to its children
@@ -199,6 +220,23 @@ const DesktopIcon = ({
     }
   }, [isOpen, defaultSizeWidth, defaultSizeHeight]);
 
+  React.useEffect(() => {
+    if (!isOpen || name === "About Me") return;
+    const keepWindowOnScreen = () => {
+      const availableWidth = Math.max(0, window.innerWidth - 32);
+      const availableHeight = Math.max(0, window.innerHeight - 72);
+      const visibleWidth = Math.min(defaultSizeWidth, availableWidth);
+      const visibleHeight = Math.min(defaultSizeHeight, availableHeight);
+      setDefaultPosition((position) => ({
+        x: Math.max(8, Math.min(position.x, window.innerWidth - visibleWidth - 8)),
+        y: Math.max(8, Math.min(position.y, window.innerHeight - visibleHeight - 44)),
+      }));
+    };
+    window.addEventListener("resize", keepWindowOnScreen);
+    keepWindowOnScreen();
+    return () => window.removeEventListener("resize", keepWindowOnScreen);
+  }, [isOpen, name, defaultSizeWidth, defaultSizeHeight]);
+
   const handleDoubleClick = () => {
     setDefaultPosition(getRandomCenterPosition(defaultSizeWidth, defaultSizeHeight));
     openWindow(name);
@@ -210,7 +248,11 @@ const DesktopIcon = ({
 
   return (
     <>
-      <div style={styles.desktopIcon} onDoubleClick={handleDoubleClick}>
+      <div
+        className={name === "File Explorer" ? "file-explorer-desktop-icon" : undefined}
+        style={styles.desktopIcon}
+        onDoubleClick={handleDoubleClick}
+      >
         {React.cloneElement(icon, { variant: "32x32_4" })}
         <p style={styles.iconName}>{name}</p>
       </div>
