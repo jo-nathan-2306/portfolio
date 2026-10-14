@@ -103,6 +103,16 @@ function getCenterPosition(width: number, height: number) {
 
 const Window = ({ title, onClose, children, icon, width, height, defaultPosition }: WindowProps) => {
   const { minimize, focus } = useModal();
+  const [customSize, setCustomSize] = React.useState<{ width: number; height: number } | null>(null);
+  const resizeOrigin = React.useRef<{
+    pointerX: number;
+    pointerY: number;
+    width: number;
+    height: number;
+    left: number;
+    top: number;
+    titleBarHeight: number;
+  } | null>(null);
   const calcW = width ?? 400;
   const calcH = height ?? 320;
   const resolvedPosition = defaultPosition ?? React.useMemo(() => getRandomCenterPosition(calcW, calcH), [calcW, calcH]);
@@ -146,13 +156,61 @@ const Window = ({ title, onClose, children, icon, width, height, defaultPosition
         top: `${resolvedPosition.y}px`,
       };
 
+  const beginResize = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const windowElement = event.currentTarget.closest<HTMLElement>(".desktop-window");
+    const contentElement = windowElement?.querySelector<HTMLElement>(".responsive-window-content");
+    if (!windowElement || !contentElement) return;
+    const windowRect = windowElement.getBoundingClientRect();
+    const contentRect = contentElement.getBoundingClientRect();
+    const titleBarHeight = windowElement.querySelector<HTMLElement>(".draggable")?.getBoundingClientRect().height ?? 32;
+    resizeOrigin.current = {
+      pointerX: event.clientX,
+      pointerY: event.clientY,
+      width: contentRect.width,
+      height: contentRect.height,
+      left: windowRect.left,
+      top: windowRect.top,
+      titleBarHeight,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const resizeWindow = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    const origin = resizeOrigin.current;
+    if (!origin) return;
+    const mobileLayout = window.matchMedia("(max-width: 700px)").matches;
+    const maxWidth = mobileLayout
+      ? window.innerWidth - 40
+      : window.innerWidth - origin.left - 16;
+    const maxHeight = mobileLayout
+      ? window.innerHeight - 36 - 108
+      : window.innerHeight - 36 - origin.top - origin.titleBarHeight - 16;
+    setCustomSize({
+      width: Math.max(180, Math.min(maxWidth, origin.width + event.clientX - origin.pointerX)),
+      height: Math.max(160, Math.min(maxHeight, origin.height + event.clientY - origin.pointerY)),
+    });
+  };
+
+  const endResize = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    resizeOrigin.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <SafeModal {...modalProps}>
       {(() => {
         const contentProps: Record<string, unknown> = {};
-        if (typeof width === 'number') contentProps.width = `${width}px`;
-        if (typeof height === 'number') contentProps.height = `${height}px`;
+        const contentWidth = customSize?.width ?? width;
+        const contentHeight = customSize?.height ?? height;
+        if (typeof contentWidth === 'number') contentProps.width = `${contentWidth}px`;
+        if (typeof contentHeight === 'number') contentProps.height = `${contentHeight}px`;
         if (title === "About Me") {
           contentProps.style = {
             maxHeight: "75vh",
@@ -169,12 +227,23 @@ const Window = ({ title, onClose, children, icon, width, height, defaultPosition
           contentProps.className = "responsive-window-content win95-scroll";
         }
         return (
-          // If no width/height passed, Modal.Content will size to its children
-          // when no explicit width/height are provided.
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          <Modal.Content {...contentProps}>
-            {children}
-          </Modal.Content>
+          <>
+            {/* If no dimensions are passed, the content sizes itself until resized. */}
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            <Modal.Content {...contentProps}>
+              {children}
+            </Modal.Content>
+            <div
+              className="desktop-window-resize-handle"
+              role="button"
+              tabIndex={0}
+              aria-label="Resize window"
+              onPointerDown={beginResize}
+              onPointerMove={resizeWindow}
+              onPointerUp={endResize}
+              onPointerCancel={endResize}
+            />
+          </>
         );
       })()}
     </SafeModal>
