@@ -10,11 +10,11 @@ const styles = {
     cursor: "pointer",
     display: "flex",
     flexDirection: "column",
-    padding: "10px",
+    padding: "4px",
     borderRadius: "8px",
     textAlign: "center",
     width: "100px",
-    gap: "10px",
+    gap: "6px",
   },
   iconImage: {
     height: "64px",

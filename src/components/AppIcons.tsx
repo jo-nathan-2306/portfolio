@@ -12,7 +12,7 @@ export function DoomIcon({ variant }: AppIconProps) {
   return (
     <img
       className="doom-window-icon"
-      src="/icons/doom.png"
+      src="/icons/doom-monster.png"
       alt=""
       width={size}
       height={size}
